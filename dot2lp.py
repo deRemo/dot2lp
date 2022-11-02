@@ -17,13 +17,17 @@ if not nx.is_directed_acyclic_graph(G):
 
 lppath = dotpath.replace(".dot", ".lp")
 with open(lppath, "w") as f:
+    f.write("\\ Use the edge constraints as indicator constraints\n")
+
+    f.write("Subject To\n")
+
     # Vertex info constraints
     for v in list(G.nodes(data=True)):
-        f.write(f"V_{v[0]}_c = {v[1]['c']}\n")
-        f.write(f"V_{v[0]}_M = {v[1]['M']}\n\n")
+       for k, val in v[1].items():
+           f.write(f" V_{v[0]}_{k} = {v[1][k]}\n")
+       f.write("\n")
 
     # Edge constraints
-    f.write("\\ Use as indicator constraints\n")
     for e in list(nx.edge_bfs(G)):
-        f.write(f"ADJ_{e[0]}_{e[1]} = 1\n")
+        f.write(f" ADJ_{e[0]}_{e[1]} = 1\n")
 
